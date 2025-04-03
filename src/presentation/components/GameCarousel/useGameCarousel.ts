@@ -22,9 +22,9 @@ export const useGameCarousel = ({ games }: UseGameCarouselProps) => {
   
   return {
     currentIndex,
+    hasGames: games.length > 0,
     nextSlide,
     prevSlide,
     goToSlide,
-    hasGames: games.length > 0
   };
 };
