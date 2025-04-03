@@ -17,7 +17,7 @@ export const FilterSection: React.FC<FilterSectionProps> = (props) => {
   const { handleSearchSubmit, handlePlatformChange } = useFilterSection(props);
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+    <div className="bg-gray-800 p-4 rounded-lg shadow-lg sticky top-4">
       <h2 className="text-xl font-bold text-white mb-4">Filtres</h2>
 
       {/* Search input */}
