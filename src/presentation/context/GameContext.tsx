@@ -72,15 +72,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   // Select a game by its ID
   const selectGame = async (gameId: string) => {
     try {
-      setLoading(true);
       const game = await gameApi.getGameById(gameId);
       setSelectedGame(game);
       setError(null);
     } catch (err) {
       setError(`Error selecting game ${gameId}`);
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -10,16 +10,22 @@ interface GameCarouselProps {
   onSelectGame: (gameId: string) => Promise<void>;
 }
 
-export const GameCarousel = ({ games, loading, error, onSelectGame }: GameCarouselProps) => {
-  const { currentIndex, hasGames, nextSlide, prevSlide, goToSlide } = useGameCarousel({ games });
+export const GameCarousel = ({
+  games,
+  loading,
+  error,
+  onSelectGame,
+}: GameCarouselProps) => {
+  const { currentIndex, hasGames, nextSlide, prevSlide, goToSlide } =
+    useGameCarousel({ games });
 
   // Afficher l'état de chargement
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div 
+        <div
           data-testid="loading-spinner"
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500" 
+          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"
         />
       </div>
     );
