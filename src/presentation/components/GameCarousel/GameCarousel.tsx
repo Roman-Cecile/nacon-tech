@@ -99,7 +99,7 @@ export const GameCarousel: React.FC<GameCarouselProps> = (props) => {
       </button>
 
       {/* Pagination indicators */}
-      <div className="absolute bottom-4 left-0 right-0">
+      <div className="absolute left-0 right-0">
         <div className="flex justify-center space-x-2">
           {games.map((_, index) => (
             <button
