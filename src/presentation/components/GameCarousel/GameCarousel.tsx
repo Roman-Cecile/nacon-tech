@@ -46,11 +46,21 @@ export const GameCarousel: React.FC<GameCarouselProps> = (props) => {
       <div className="overflow-hidden rounded-lg">
         <div className="flex justify-center items-center">
           <div className="w-full md:w-2/3 lg:w-1/2 px-4">
-            <GameCard
-              key={games[currentIndex].id}
-              game={games[currentIndex]}
-              onSelect={onSelectGame}
-            />
+            <div
+              className="flex gap-4 transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {games.map((item, index) => (
+                <div
+                  key={`child-${item.id}`}
+                  className={`w-full flex-shrink-0 opacity-0 ${
+                    index === currentIndex && 'opacity-100'
+                  } transition-opacity duration-300 ease-in-out`}
+                >
+                  <GameCard key={item.id} game={item} onSelect={onSelectGame} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
