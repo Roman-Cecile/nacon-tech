@@ -1,54 +1,86 @@
-# React + TypeScript + Vite
+# Nacon LiveOps
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Aperçu du Projet
 
-Currently, two official plugins are available:
+Ce projet est une boutique de jeux vidéo. Il permet de visualiser de différentes manières les items vendus.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+L'application propose deux modes d'affichage principaux :
+- **Vue en Grille** : Affiche les jeux dans un format structuré en grille
+- **Vue en Carrousel** : Affiche un jeu à la fois avec des flèches de navigation
 
-## Expanding the ESLint configuration
+## Technologies Utilisées
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Architecture Clean (Domain-Driven Design)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Prérequis
+
+- Node.js (version 18 ou supérieure)
+- npm
+
+## Installation
+
+1. Clonez le dépôt :
+```bash
+git clone <url-du-dépôt>
+cd nacon-liveops
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+2. Installez les dépendances :
+```bash
+npm install
 ```
+3. Lancez l'application :
+```bash
+npm run dev
+```
+L'application sera accessible à l'adresse http://localhost:5173 .
+
+```
+nacon-liveops/
+├── public/            # Ressources statiques (images, vidéos)
+├── src/
+│   ├── assets/        # Ressources utilisées par l'application
+│   ├── data/          # Couche de données (repositories)
+│   ├── domain/        # Entités et cas d'utilisation
+│   ├── infrastructure/# Adaptateurs d'API et services externes
+│   ├── presentation/  # Composants React et logique UI
+│   │   ├── components/# Composants réutilisables
+│   │   ├── context/   # Contextes React
+│   │   └── pages/     # Pages de l'application
+│   ├── App.tsx        # Composant racine
+│   └── main.tsx       # Point d'entrée
+└── ...
+````
+
+## Fonctionnalités
+
+### Affichage des Jeux
+L'application propose deux modes d'affichage :
+1. Vue en Grille : Affiche plusieurs jeux simultanément dans une grille responsive.
+2. Vue en Carrousel : Affiche un jeu à la fois avec des animations de transition fluides et des contrôles de navigation.
+
+### Filtrer et recherche
+- Filtrage par plateforme (PC, PlayStation, Xbox, Switch)
+- Recherche par titre de jeu
+- Réinitialisation des filtres
+
+## Architecture
+
+Le projet suit les principes de la Clean Architecture :
+- Domain : Contient les entités métier et les interfaces des cas d'utilisation
+- Data : Implémente les repositories pour l'accès aux données
+- Infrastructure : Contient les adaptateurs pour les services externes
+- Presentation : Gère l'interface utilisateur et les interactions
+
+## API Mockée
+L'application utilise une API simulée avec des délais réseau pour reproduire un environnement réel. Les données sont stockées localement dans `MockGameRepository.ts` .
+
+## Développement
+### Ajout de nouveaux jeux
+Pour ajouter de nouveaux jeux, modifiez le fichier `src/data/repositories/MockGameRepository.ts` et ajoutez des entrées au tableau mockGames .
+
+### Personnalisation des Styles
+Les styles sont basés sur Tailwind CSS. Pour personnaliser l'apparence, modifiez les classes dans les composants ou ajustez la configuration dans `tailwind.config.js` .
