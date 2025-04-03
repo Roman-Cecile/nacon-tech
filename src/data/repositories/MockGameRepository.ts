@@ -69,6 +69,18 @@ const mockGames: Game[] = [
     publisher: 'Nacon Sports',
     genre: 'Sport'
   },
+  {
+    id: '7',
+    title: 'Mystic Quest',
+    description: 'Découvrez un monde mystérieux avec des quêtes et des ennemis surnaturels.',
+    imageUrl: '/images/game7.jpg',
+    videoUrl: '/videos/game7.mp4',
+    platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
+    releaseDate: '2023-09-20',
+    publisher: 'Nacon Mystery',
+    genre: 'Aventure'
+  }
+  
 ];
 
 /**
