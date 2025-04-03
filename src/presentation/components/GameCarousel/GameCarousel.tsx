@@ -45,9 +45,9 @@ export const GameCarousel: React.FC<GameCarouselProps> = (props) => {
     <div className="relative w-full">
       <div className="overflow-hidden rounded-lg">
         <div className="flex justify-center items-center">
-          <div className="w-full md:w-2/3 lg:w-1/2 px-4">
+          <div className="w-full md:w-2/3 lg:w-1/2 p-4">
             <div
-              className="flex gap-4 transition-transform duration-700 ease-in-out"
+              className="flex transition-transform duration-700 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
               {games.map((item, index) => (

@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { Platform } from '../../../domain/entities/Game';
 
 interface UseFilterSectionProps {
   selectedPlatform: Platform | null;
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
   filterGamesByPlatform: (platform: Platform) => Promise<void>;
   getGamesByTitle: (query: string) => Promise<void>;
   resetFilters: () => Promise<void>;
@@ -13,7 +11,6 @@ interface UseFilterSectionProps {
 export const useFilterSection = ({
   selectedPlatform,
   searchQuery,
-  setSearchQuery,
   filterGamesByPlatform,
   getGamesByTitle,
   resetFilters,
