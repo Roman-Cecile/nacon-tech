@@ -1,17 +1,13 @@
-/**
- * React context for managing the global state of games
- */
 import React, {
   createContext,
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  useCallback,
 } from 'react';
 import { Game, Platform } from '../../domain/entities/Game';
 import { GameApiAdapter } from '../../infrastructure/api/GameApiAdapter';
 
-// Interface for the context
 interface GameContextType {
   games: Game[];
   loading: boolean;
@@ -21,137 +17,207 @@ interface GameContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectGame: (gameId: string) => Promise<void>;
-  filterGamesByPlatform: (platform: Platform) => Promise<void>;
+  filterGamesByPlatform: (platform: Platform | null) => Promise<void>;
   getGamesByTitle: (query: string) => Promise<void>;
   resetFilters: () => Promise<void>;
+  loadMoreGames: () => Promise<void>;
+  hasMoreGames: boolean;
 }
 
-// Props for the provider
-interface GameProviderProps {
-  children: ReactNode;
-}
-
-// Creating the context with a default value
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-/**
- * Provider for the games context
- */
-export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
+export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(
     null
   );
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreGames, setHasMoreGames] = useState(true);
+  const [isFiltered, setIsFiltered] = useState(false);
 
-  // API adapter instance
-  const gameApi = new GameApiAdapter();
+  const gameApiAdapter = new GameApiAdapter();
+  const ITEMS_PER_PAGE = 6;
 
-  // Initial loading of games
+  // Load initial games
   useEffect(() => {
-    const loadGames = async () => {
+    const fetchGames = async () => {
       try {
         setLoading(true);
-        const allGames = await gameApi.getAllGames();
-        setGames(allGames);
         setError(null);
+        const fetchedGames = await gameApiAdapter.getGamesPaginated(
+          1,
+          ITEMS_PER_PAGE
+        );
+        setGames(fetchedGames);
+        setCurrentPage(1);
+        setHasMoreGames(fetchedGames.length === ITEMS_PER_PAGE);
       } catch (err) {
-        setError('Error loading games');
+        setError('Failed to fetch games. Please try again later.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    loadGames();
+    fetchGames();
   }, []);
 
-  // Select a game by its ID
+  // Load more games for infinite scrolling
+  const loadMoreGames = useCallback(async () => {
+    if (isFiltered || !hasMoreGames || loading) return;
+
+    try {
+      setLoading(true);
+      const nextPage = currentPage + 1;
+      const moreGames = await gameApiAdapter.getGamesPaginated(
+        nextPage,
+        ITEMS_PER_PAGE
+      );
+
+      if (moreGames.length > 0) {
+        setGames((prevGames) => [...prevGames, ...moreGames]);
+        setCurrentPage(nextPage);
+        setHasMoreGames(moreGames.length === ITEMS_PER_PAGE);
+      } else {
+        setHasMoreGames(false);
+      }
+    } catch (err) {
+      setError('Failed to load more games. Please try again later.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, hasMoreGames, loading, isFiltered]);
+
+  // Select a game by ID
   const selectGame = async (gameId: string) => {
     try {
-      const game = await gameApi.getGameById(gameId);
-      setSelectedGame(game);
-      setError(null);
+      setLoading(true);
+      const game = await gameApiAdapter.getGameById(gameId);
+      if (game) {
+        setSelectedGame(game);
+      }
     } catch (err) {
-      setError(`Error selecting game ${gameId}`);
+      setError('Failed to select game. Please try again later.');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Filter games by platform
-  const filterGamesByPlatform = async (platform: Platform) => {
+  const filterGamesByPlatform = async (platform: Platform | null) => {
     try {
       setLoading(true);
-      const filteredGames = await gameApi.getGamesByPlatform(platform);
-      setGames(filteredGames);
       setSelectedPlatform(platform);
-      setError(null);
+
+      if (platform) {
+        const filteredGames = await gameApiAdapter.getGamesByPlatform(platform);
+        setGames(filteredGames);
+        setIsFiltered(true);
+        setHasMoreGames(false);
+      } else {
+        // Reset to first page when clearing platform filter
+        const initialGames = await gameApiAdapter.getGamesPaginated(
+          1,
+          ITEMS_PER_PAGE
+        );
+        setGames(initialGames);
+        setCurrentPage(1);
+        setHasMoreGames(initialGames.length === ITEMS_PER_PAGE);
+        setIsFiltered(false);
+      }
     } catch (err) {
-      setError(`Error filtering games by platform ${platform}`);
+      setError('Failed to filter games. Please try again later.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Search for games
+  // Search games by title
   const getGamesByTitle = async (query: string) => {
     try {
       setLoading(true);
-      const searchResults = await gameApi.getGamesByTitle(query);
-      setGames(searchResults);
       setSearchQuery(query);
-      setError(null);
+
+      if (query.trim()) {
+        const searchResults = await gameApiAdapter.getGamesByTitle(query);
+        setGames(searchResults);
+        setIsFiltered(true);
+        setHasMoreGames(false);
+      } else {
+        // Reset to first page when clearing search
+        const initialGames = await gameApiAdapter.getGamesPaginated(
+          1,
+          ITEMS_PER_PAGE
+        );
+        setGames(initialGames);
+        setCurrentPage(1);
+        setHasMoreGames(initialGames.length === ITEMS_PER_PAGE);
+        setIsFiltered(false);
+      }
     } catch (err) {
-      setError(`Error searching for games with term "${query}"`);
+      setError('Failed to search games. Please try again later.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Reset filters
+  // Reset all filters
   const resetFilters = async () => {
     try {
       setLoading(true);
-      const allGames = await gameApi.getAllGames();
-      setGames(allGames);
       setSelectedPlatform(null);
       setSearchQuery('');
-      setError(null);
+
+      const initialGames = await gameApiAdapter.getGamesPaginated(
+        1,
+        ITEMS_PER_PAGE
+      );
+      setGames(initialGames);
+      setCurrentPage(1);
+      setHasMoreGames(initialGames.length === ITEMS_PER_PAGE);
+      setIsFiltered(false);
     } catch (err) {
-      setError('Error resetting filters');
+      setError('Failed to reset filters. Please try again later.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Context value
-  const value: GameContextType = {
-    games,
-    loading,
-    error,
-    selectedGame,
-    selectedPlatform,
-    searchQuery,
-    setSearchQuery,
-    selectGame,
-    filterGamesByPlatform,
-    getGamesByTitle,
-    resetFilters,
-  };
-
-  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+  return (
+    <GameContext.Provider
+      value={{
+        games,
+        loading,
+        error,
+        selectedGame,
+        selectedPlatform,
+        searchQuery,
+        setSearchQuery,
+        selectGame,
+        filterGamesByPlatform,
+        getGamesByTitle,
+        resetFilters,
+        loadMoreGames,
+        hasMoreGames,
+      }}
+    >
+      {children}
+    </GameContext.Provider>
+  );
 };
 
-/**
- * Custom hook to use the games context
- */
-export const useGameContext = (): GameContextType => {
+export const useGameContext = () => {
   const context = useContext(GameContext);
   if (context === undefined) {
     throw new Error('useGameContext must be used within a GameProvider');

@@ -67,4 +67,19 @@ export class GameApiAdapter implements GameUseCases {
       throw error;
     }
   }
+
+  /**
+   * Simulates an API request to get paginated games
+   * @param page Page number (starting from 1)
+   * @param limit Number of items per page
+   */
+  async getGamesPaginated(page: number = 1, limit: number = 6): Promise<Game[]> {
+    try {
+      const games = await this.mockRepository.getGamesPaginated(page, limit);
+      return games;
+    } catch (error) {
+      console.error(`Error fetching paginated games, page: ${page}, limit: ${limit}:`, error);
+      throw error;
+    }
+  }
 }
