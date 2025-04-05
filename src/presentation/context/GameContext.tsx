@@ -57,11 +57,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
         setGames(fetchedGames);
         setCurrentPage(1);
         setHasMoreGames(fetchedGames.length === ITEMS_PER_PAGE);
-
-        // Select the first game by default
-        if (fetchedGames.length > 0 && !selectedGame) {
-          setSelectedGame(fetchedGames[0]);
-        }
       } catch (err) {
         setError('Failed to fetch games. Please try again later.');
         console.error(err);
