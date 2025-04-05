@@ -22,6 +22,8 @@ export const GamesPage: React.FC = () => {
     filterGamesByPlatform,
     getGamesByTitle,
     resetFilters,
+    loadMoreGames,
+    hasMoreGames,
   } = useGameContext();
 
   const { viewMode, toggleViewMode } = useGamesPage();
@@ -92,6 +94,7 @@ export const GamesPage: React.FC = () => {
               loading={loading}
               error={error}
               onSelectGame={selectGame}
+              onLoadMore={hasMoreGames ? loadMoreGames : undefined}
             />
           ) : (
             <GameCarousel
