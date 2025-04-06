@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Game } from '../../../domain/entities/Game';
 import { GameCard } from '../GameCard/GameCard';
 import { useGameCarousel } from './useGameCarousel';
