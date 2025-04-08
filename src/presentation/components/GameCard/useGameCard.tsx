@@ -1,4 +1,4 @@
-import { Platform } from '../../../domain/entities/Game';
+import { Platform, Promotion } from '../../../domain/entities/Game';
 
 interface UseGameCardProps {
   onSelect: (gameId: string) => void;
@@ -44,8 +44,22 @@ export const useGameCard = ({ onSelect }: UseGameCardProps) => {
     onSelect(gameId);
   };
 
+  /**
+   * Checks if a promotion is currently active
+   */
+  const isPromotionActive = (promotion: Promotion): boolean => {
+    const now = new Date();
+    const startDate = new Date(promotion.startDate);
+    const endDate = new Date(promotion.endDate);
+    console.log(now >= startDate && now <= endDate);
+    console.log({ now, startDate, endDate });
+
+    return now >= startDate && now <= endDate;
+  };
+
   return {
     renderPlatforms,
-    handleSelectGame
+    handleSelectGame,
+    isPromotionActive,
   };
 };

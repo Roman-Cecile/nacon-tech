@@ -1,4 +1,4 @@
-import { Game, Platform } from '../../domain/entities/Game';
+import { Game, Platform, Promotion } from '../../domain/entities/Game';
 import { GameUseCases } from '../../domain/usecases/GameUseCases';
 import { MockGameRepository } from '../../data/repositories/MockGameRepository';
 
@@ -79,6 +79,21 @@ export class GameApiAdapter implements GameUseCases {
       return games;
     } catch (error) {
       console.error(`Error fetching paginated games, page: ${page}, limit: ${limit}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Updates a game's promotion information
+   * @param gameId ID of the game to update
+   * @param promotion New promotion data or null to remove promotion
+   */
+  async updateGamePromotion(gameId: string, promotion: Promotion | null): Promise<Game | null> {
+    try {
+      const updatedGame = await this.mockRepository.updateGamePromotion(gameId, promotion);
+      return updatedGame;
+    } catch (error) {
+      console.error(`Error updating promotion for game ${gameId}:`, error);
       throw error;
     }
   }

@@ -31,6 +31,18 @@ export enum ItemType {
 }
 
 /**
+ * Promotion entity representing a promotional period for a game
+ */
+export interface Promotion {
+  id: string;
+  startDate: string;
+  endDate: string;
+  isRecurring: boolean;
+  discountPercentage?: number;
+  name?: string;
+}
+
+/**
  * Game entity representing a videogame
  */
 export interface Game {
@@ -44,6 +56,7 @@ export interface Game {
   publisher: string;
   genre: string;
   items?: Item[];
+  promotion: Promotion | null;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { Game, Platform, Item, ItemType, ItemStat } from '../../domain/entities/Game';
+import { Game, Platform, Item, ItemType, ItemStat, Promotion } from '../../domain/entities/Game';
 import { GameUseCases } from '../../domain/usecases/GameUseCases';
 
 // Mock items for different game types
@@ -211,6 +211,14 @@ const mockGames: Game[] = [
     releaseDate: '2023-05-15',
     publisher: 'Nacon Studios',
     genre: 'Aventure',
+    promotion: {
+      id: 'promo1',
+      startDate: '2023-12-01',
+      endDate: '2026-01-15',
+      isRecurring: false,
+      discountPercentage: 30,
+      name: 'Soldes d\'hiver'
+    },
     items: [
       rpgItems[0],
       rpgItems[2],
@@ -238,6 +246,7 @@ const mockGames: Game[] = [
     releaseDate: '2023-08-22',
     publisher: 'Nacon Racing',
     genre: 'Course',
+    promotion: null,
     items: [
       vehicleItems[0],
       vehicleItems[2],
@@ -265,6 +274,14 @@ const mockGames: Game[] = [
     releaseDate: '2023-11-10',
     publisher: 'Nacon Interactive',
     genre: 'FPS',
+    promotion: {
+      id: 'promo3',
+      startDate: '2023-11-24',
+      endDate: '2023-11-28',
+      isRecurring: true,
+      discountPercentage: 50,
+      name: 'Black Friday'
+    },
     items: [
       weaponItems[0],
       weaponItems[1],
@@ -293,6 +310,7 @@ const mockGames: Game[] = [
     releaseDate: '2024-01-30',
     publisher: 'Nacon RPG',
     genre: 'RPG',
+    promotion: null,
     items: [
       rpgItems[0],
       rpgItems[1],
@@ -321,6 +339,14 @@ const mockGames: Game[] = [
     releaseDate: '2024-03-18',
     publisher: 'Nacon Survival',
     genre: 'Survie',
+    promotion: {
+      id: 'promo5',
+      startDate: '2024-06-21',
+      endDate: '2024-07-21',
+      isRecurring: true,
+      discountPercentage: 25,
+      name: 'Soldes d\'été'
+    },
     items: [
       survivalItems[0],
       survivalItems[1],
@@ -350,6 +376,7 @@ const mockGames: Game[] = [
     releaseDate: '2023-07-05',
     publisher: 'Nacon Sports',
     genre: 'Sport',
+    promotion: null,
     items: [
       sportsItems[0],
       sportsItems[1],
@@ -377,7 +404,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2023-09-20',
     publisher: 'Nacon Mystery',
-    genre: 'Aventure'
+    genre: 'Aventure',
+    promotion: null,
   },
   {
     id: '8',
@@ -388,7 +416,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION],
     releaseDate: '2023-10-12',
     publisher: 'Nacon Future',
-    genre: 'RPG'
+    genre: 'RPG',
+    promotion: null,
   },
   {
     id: '9',
@@ -399,7 +428,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX],
     releaseDate: '2023-12-05',
     publisher: 'Nacon History',
-    genre: 'Simulation'
+    genre: 'Simulation',
+    promotion: null,
   },
   {
     id: '10',
@@ -410,7 +440,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.SWITCH],
     releaseDate: '2024-02-18',
     publisher: 'Nacon Discovery',
-    genre: 'Aventure'
+    genre: 'Aventure',
+    promotion: null,
   },
   {
     id: '11',
@@ -421,7 +452,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2024-04-22',
     publisher: 'Nacon Space',
-    genre: 'Stratégie'
+    genre: 'Stratégie',
+    promotion: null,
   },
   {
     id: '12',
@@ -432,7 +464,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX],
     releaseDate: '2023-11-30',
     publisher: 'Nacon Horror',
-    genre: 'Survie'
+    genre: 'Survie',
+    promotion: null,
   },
   {
     id: '13',
@@ -443,7 +476,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2024-01-15',
     publisher: 'Nacon Racing',
-    genre: 'Course'
+    genre: 'Course',
+    promotion: null,
   },
   {
     id: '14',
@@ -454,7 +488,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.SWITCH],
     releaseDate: '2023-08-08',
     publisher: 'Nacon Puzzle',
-    genre: 'Réflexion'
+    genre: 'Réflexion',
+    promotion: null,
   },
   {
     id: '15',
@@ -465,7 +500,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION],
     releaseDate: '2024-03-05',
     publisher: 'Nacon Strategy',
-    genre: 'Stratégie'
+    genre: 'Stratégie',
+    promotion: null,
   }
 ];
 
@@ -519,5 +555,32 @@ export class MockGameRepository implements GameUseCases {
     const endIndex = startIndex + limit;
     
     return mockGames.slice(startIndex, endIndex);
+  }
+  
+  /**
+   * Update a game's promotion information
+   * @param gameId ID of the game to update
+   * @param promotion New promotion data or null to remove promotion
+   */
+  async updateGamePromotion(gameId: string, promotion: Promotion | null): Promise<Game | null> {
+    console.log(`PUT ${this.baseUrl}/${gameId}/promotion`);
+    
+    // Simulates network delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    // Find the game in our mock data
+    const gameIndex = mockGames.findIndex(game => game.id === gameId);
+    
+    if (gameIndex === -1) {
+      return null;
+    }
+    
+    // Create a copy of the game and update its promotion
+    const updatedGame = { ...mockGames[gameIndex], promotion };
+    
+    // Update the game in our mock data
+    mockGames[gameIndex] = updatedGame;
+    
+    return updatedGame;
   }
 }
