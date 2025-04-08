@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import { Game, Platform } from '../../domain/entities/Game';
+import { Game, Platform, Promotion } from '../../domain/entities/Game';
 import { GameApiAdapter } from '../../infrastructure/api/GameApiAdapter';
 
 interface GameContextType {
@@ -22,6 +22,10 @@ interface GameContextType {
   resetFilters: () => Promise<void>;
   loadMoreGames: () => Promise<void>;
   hasMoreGames: boolean;
+  updateGamePromotion: (
+    gameId: string,
+    promotion: Promotion | null
+  ) => Promise<void>;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -194,6 +198,36 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // Update a game's promotion
+  const updateGamePromotion = async (
+    gameId: string,
+    promotion: Promotion | null
+  ) => {
+    try {
+      setError(null);
+
+      const updatedGame = await gameApiAdapter.updateGamePromotion(
+        gameId,
+        promotion
+      );
+
+      if (updatedGame) {
+        // Update the game in the games list
+        setGames((prevGames) =>
+          prevGames.map((game) => (game.id === gameId ? updatedGame : game))
+        );
+
+        // Update selected game if it's the one being edited
+        if (selectedGame && selectedGame.id === gameId) {
+          setSelectedGame(updatedGame);
+        }
+      }
+    } catch (err) {
+      setError('Failed to update game promotion. Please try again later.');
+      console.error(err);
+    }
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -210,6 +244,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
         resetFilters,
         loadMoreGames,
         hasMoreGames,
+        updateGamePromotion,
       }}
     >
       {children}

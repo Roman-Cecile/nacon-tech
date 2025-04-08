@@ -1,5 +1,326 @@
-import { Game, Platform } from '../../domain/entities/Game';
+import { Game, Platform, Item, ItemType, Promotion } from '../../domain/entities/Game';
 import { GameUseCases } from '../../domain/usecases/GameUseCases';
+
+// Mock items for different game types
+const weaponItems: Item[] = [
+  {
+    id: 'w1',
+    name: 'Fusil d\'assaut tactique',
+    description: 'Arme polyvalente avec une bonne cadence de tir et précision',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/tactical-rifle.png',
+    stats: [
+      { name: 'Dégâts', value: 45, maxValue: 100 },
+      { name: 'Précision', value: 75, maxValue: 100 },
+      { name: 'Cadence', value: 65, maxValue: 100 },
+      { name: 'Portée', value: 70, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'w2',
+    name: 'Sniper de précision',
+    description: 'Fusil à longue portée pour éliminer les ennemis à distance',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/sniper-rifle.png',
+    stats: [
+      { name: 'Dégâts', value: 95, maxValue: 100 },
+      { name: 'Précision', value: 90, maxValue: 100 },
+      { name: 'Cadence', value: 15, maxValue: 100 },
+      { name: 'Portée', value: 100, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'w3',
+    name: 'Pistolet de service',
+    description: 'Arme de poing fiable pour les situations d\'urgence',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/pistol.png',
+    stats: [
+      { name: 'Dégâts', value: 30, maxValue: 100 },
+      { name: 'Précision', value: 60, maxValue: 100 },
+      { name: 'Cadence', value: 40, maxValue: 100 },
+      { name: 'Portée', value: 25, maxValue: 100 }
+    ]
+  }
+];
+
+const vehicleItems: Item[] = [
+  {
+    id: 'v1',
+    name: 'Supercar GT',
+    description: 'Voiture de sport haute performance avec une vitesse maximale impressionnante',
+    type: ItemType.VEHICLE,
+    imageUrl: './src/assets/supercar.png',
+    stats: [
+      { name: 'Vitesse', value: 95, maxValue: 100 },
+      { name: 'Accélération', value: 90, maxValue: 100 },
+      { name: 'Maniabilité', value: 75, maxValue: 100 },
+      { name: 'Freinage', value: 80, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'v2',
+    name: '4x4 Tout-terrain',
+    description: 'Véhicule robuste capable de traverser tous types de terrains',
+    type: ItemType.VEHICLE,
+    imageUrl: './src/assets/offroad.png',
+    stats: [
+      { name: 'Vitesse', value: 60, maxValue: 100 },
+      { name: 'Accélération', value: 50, maxValue: 100 },
+      { name: 'Maniabilité', value: 65, maxValue: 100 },
+      { name: 'Tout-terrain', value: 95, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'v3',
+    name: 'Moto de course',
+    description: 'Moto légère et rapide pour les circuits',
+    type: ItemType.VEHICLE,
+    imageUrl: './src/assets/racing-bike.png',
+    stats: [
+      { name: 'Vitesse', value: 90, maxValue: 100 },
+      { name: 'Accélération', value: 95, maxValue: 100 },
+      { name: 'Maniabilité', value: 85, maxValue: 100 },
+      { name: 'Freinage', value: 70, maxValue: 100 }
+    ]
+  }
+];
+
+const rpgItems: Item[] = [
+  {
+    id: 'r1',
+    name: 'Épée légendaire',
+    description: 'Une épée forgée par les anciens, imprégnée de magie puissante',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/legendary-sword.png',
+    stats: [
+      { name: 'Dégâts', value: 85, maxValue: 100 },
+      { name: 'Vitesse', value: 60, maxValue: 100 },
+      { name: 'Critique', value: 75, maxValue: 100 },
+      { name: 'Magie', value: 90, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'r2',
+    name: 'Armure de dragon',
+    description: 'Armure forgée à partir d\'écailles de dragon, offrant une protection exceptionnelle',
+    type: ItemType.ARMOR,
+    imageUrl: './src/assets/dragon-armor.png',
+    stats: [
+      { name: 'Défense', value: 90, maxValue: 100 },
+      { name: 'Résistance magique', value: 85, maxValue: 100 },
+      { name: 'Durabilité', value: 95, maxValue: 100 },
+      { name: 'Poids', value: 70, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'r3',
+    name: 'Amulette de vie',
+    description: 'Un artefact ancien qui augmente la vitalité de son porteur',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/life-amulet.png',
+    stats: [
+      { name: 'Santé', value: 80, maxValue: 100 },
+      { name: 'Régénération', value: 75, maxValue: 100 },
+      { name: 'Protection', value: 50, maxValue: 100 },
+      { name: 'Chance', value: 60, maxValue: 100 }
+    ]
+  }
+];
+
+const manyItems: Item[] = [
+  {
+    id: 'mi1',
+    name: 'Épée de feu',
+    description: 'Une épée enflammée qui inflige des dégâts supplémentaires',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/fire-sword.png',
+    stats: [
+      { name: 'Dégâts', value: 80, maxValue: 100 },
+      { name: 'Dégâts de feu', value: 95, maxValue: 100 },
+      { name: 'Vitesse', value: 65, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi2',
+    name: 'Bouclier de glace',
+    description: 'Un bouclier magique qui gèle les ennemis à l\'impact',
+    type: ItemType.ARMOR,
+    imageUrl: './src/assets/ice-shield.png',
+    stats: [
+      { name: 'Défense', value: 85, maxValue: 100 },
+      { name: 'Résistance au feu', value: 90, maxValue: 100 },
+      { name: 'Chance de gel', value: 75, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi3',
+    name: 'Bottes de célérité',
+    description: 'Des bottes magiques qui augmentent considérablement la vitesse',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/speed-boots.png',
+    stats: [
+      { name: 'Vitesse', value: 95, maxValue: 100 },
+      { name: 'Agilité', value: 85, maxValue: 100 },
+      { name: 'Endurance', value: 70, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi4',
+    name: 'Potion de force',
+    description: 'Une potion qui augmente temporairement la force',
+    type: ItemType.CONSUMABLE,
+    imageUrl: './src/assets/strength-potion.png',
+    stats: [
+      { name: 'Bonus de force', value: 90, maxValue: 100 },
+      { name: 'Durée', value: 60, maxValue: 100 },
+      { name: 'Effets secondaires', value: 20, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi5',
+    name: 'Arc elfique',
+    description: 'Un arc léger et précis fabriqué par les elfes',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/elven-bow.png',
+    stats: [
+      { name: 'Dégâts', value: 70, maxValue: 100 },
+      { name: 'Précision', value: 95, maxValue: 100 },
+      { name: 'Portée', value: 90, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi6',
+    name: 'Casque de vision nocturne',
+    description: 'Un casque technologique permettant de voir dans l\'obscurité',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/night-vision.png',
+    stats: [
+      { name: 'Vision nocturne', value: 100, maxValue: 100 },
+      { name: 'Confort', value: 65, maxValue: 100 },
+      { name: 'Autonomie', value: 80, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi7',
+    name: 'Gants de voleur',
+    description: 'Des gants qui augmentent la dextérité et la discrétion',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/thief-gloves.png',
+    stats: [
+      { name: 'Dextérité', value: 90, maxValue: 100 },
+      { name: 'Discrétion', value: 85, maxValue: 100 },
+      { name: 'Crochetage', value: 95, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi8',
+    name: 'Bâton de mage',
+    description: 'Un bâton qui amplifie les pouvoirs magiques',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/mage-staff.png',
+    stats: [
+      { name: 'Puissance magique', value: 95, maxValue: 100 },
+      { name: 'Régénération de mana', value: 80, maxValue: 100 },
+      { name: 'Contrôle des éléments', value: 85, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi9',
+    name: 'Amulette de téléportation',
+    description: 'Une amulette qui permet de se téléporter sur de courtes distances',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/teleport-amulet.png',
+    stats: [
+      { name: 'Distance', value: 70, maxValue: 100 },
+      { name: 'Temps de recharge', value: 60, maxValue: 100 },
+      { name: 'Précision', value: 85, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi10',
+    name: 'Armure lourde',
+    description: 'Une armure robuste offrant une protection maximale',
+    type: ItemType.ARMOR,
+    imageUrl: './src/assets/heavy-armor.png',
+    stats: [
+      { name: 'Défense', value: 95, maxValue: 100 },
+      { name: 'Mobilité', value: 40, maxValue: 100 },
+      { name: 'Durabilité', value: 90, maxValue: 100 }
+    ]
+  }
+];
+
+const survivalItems: Item[] = [
+  {
+    id: 's1',
+    name: 'Hache de survie',
+    description: 'Outil polyvalent pour couper du bois et se défendre',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/survival-axe.png',
+    stats: [
+      { name: 'Dégâts', value: 65, maxValue: 100 },
+      { name: 'Durabilité', value: 80, maxValue: 100 },
+      { name: 'Polyvalence', value: 90, maxValue: 100 },
+      { name: 'Poids', value: 50, maxValue: 100 }
+    ]
+  },
+  {
+    id: 's2',
+    name: 'Kit de premiers soins',
+    description: 'Ensemble d\'équipements médicaux pour traiter les blessures',
+    type: ItemType.CONSUMABLE,
+    imageUrl: './src/assets/medkit.png',
+    stats: [
+      { name: 'Guérison', value: 75, maxValue: 100 },
+      { name: 'Utilisations', value: 3, maxValue: 5 },
+      { name: 'Efficacité', value: 80, maxValue: 100 },
+      { name: 'Temps d\'utilisation', value: 60, maxValue: 100 }
+    ]
+  },
+  {
+    id: 's3',
+    name: 'Sac à dos tactique',
+    description: 'Sac à dos spacieux avec de nombreux compartiments',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/tactical-backpack.png',
+    stats: [
+      { name: 'Capacité', value: 85, maxValue: 100 },
+      { name: 'Durabilité', value: 90, maxValue: 100 },
+      { name: 'Organisation', value: 75, maxValue: 100 },
+      { name: 'Poids', value: 40, maxValue: 100 }
+    ]
+  }
+];
+
+const sportsItems: Item[] = [
+  {
+    id: 'sp1',
+    name: 'Chaussures professionnelles',
+    description: 'Chaussures de sport haute performance pour une meilleure agilité',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/pro-shoes.png',
+    stats: [
+      { name: 'Vitesse', value: 85, maxValue: 100 },
+      { name: 'Agilité', value: 90, maxValue: 100 },
+      { name: 'Confort', value: 80, maxValue: 100 },
+      { name: 'Durabilité', value: 75, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'sp2',
+    name: 'Ballon officiel',
+    description: 'Ballon de compétition aux normes internationales',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/official-ball.png',
+    stats: [
+      { name: 'Précision', value: 95, maxValue: 100 },
+      { name: 'Rebond', value: 90, maxValue: 100 },
+      { name: 'Durabilité', value: 85, maxValue: 100 },
+      { name: 'Contrôle', value: 95, maxValue: 100 }
+    ]
+  }
+];
 
 // Mock data for games
 const mockGames: Game[] = [
@@ -12,7 +333,31 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2023-05-15',
     publisher: 'Nacon Studios',
-    genre: 'Aventure'
+    genre: 'Aventure',
+    promotion: {
+      id: 'promo1',
+      startDate: '2023-12-01',
+      endDate: '2026-01-15',
+      isRecurring: false,
+      discountPercentage: 30,
+      name: 'Soldes d\'hiver'
+    },
+    items: [
+      rpgItems[0],
+      rpgItems[2],
+      {
+        id: 'a1',
+        name: 'Carte au trésor',
+        description: 'Révèle l\'emplacement des trésors cachés dans le monde',
+        type: ItemType.ACCESSORY,
+        imageUrl: './src/assets/treasure-map.png',
+        stats: [
+          { name: 'Précision', value: 85, maxValue: 100 },
+          { name: 'Portée', value: 70, maxValue: 100 },
+          { name: 'Détail', value: 90, maxValue: 100 }
+        ]
+      }
+    ]
   },
   {
     id: '2',
@@ -23,7 +368,24 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX, Platform.SWITCH],
     releaseDate: '2023-08-22',
     publisher: 'Nacon Racing',
-    genre: 'Course'
+    genre: 'Course',
+    promotion: null,
+    items: [
+      vehicleItems[0],
+      vehicleItems[2],
+      {
+        id: 'c1',
+        name: 'Turbo Boost',
+        description: 'Système d\'amélioration temporaire de la vitesse',
+        type: ItemType.ACCESSORY,
+        imageUrl: './src/assets/turbo-boost.png',
+        stats: [
+          { name: 'Puissance', value: 95, maxValue: 100 },
+          { name: 'Durée', value: 30, maxValue: 100 },
+          { name: 'Recharge', value: 60, maxValue: 100 }
+        ]
+      }
+    ]
   },
   {
     id: '3',
@@ -34,7 +396,32 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX],
     releaseDate: '2023-11-10',
     publisher: 'Nacon Interactive',
-    genre: 'FPS'
+    genre: 'FPS',
+    promotion: {
+      id: 'promo3',
+      startDate: '2023-11-24',
+      endDate: '2023-11-28',
+      isRecurring: true,
+      discountPercentage: 50,
+      name: 'Black Friday'
+    },
+    items: [
+      weaponItems[0],
+      weaponItems[1],
+      weaponItems[2],
+      {
+        id: 'f1',
+        name: 'Gilet pare-balles',
+        description: 'Protection balistique avancée pour les situations de combat',
+        type: ItemType.ARMOR,
+        imageUrl: './src/assets/bulletproof-vest.png',
+        stats: [
+          { name: 'Protection', value: 85, maxValue: 100 },
+          { name: 'Mobilité', value: 60, maxValue: 100 },
+          { name: 'Durabilité', value: 75, maxValue: 100 }
+        ]
+      }
+    ]
   },
   {
     id: '4',
@@ -45,7 +432,9 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.SWITCH],
     releaseDate: '2024-01-30',
     publisher: 'Nacon RPG',
-    genre: 'RPG'
+    genre: 'RPG',
+    promotion: null,
+    items: manyItems // Utilisation des nombreux items pour tester le défilement infini
   },
   {
     id: '5',
@@ -56,7 +445,33 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX, Platform.PLAYSTATION],
     releaseDate: '2024-03-18',
     publisher: 'Nacon Survival',
-    genre: 'Survie'
+    genre: 'Survie',
+    promotion: {
+      id: 'promo5',
+      startDate: '2024-06-21',
+      endDate: '2024-07-21',
+      isRecurring: true,
+      discountPercentage: 25,
+      name: 'Soldes d\'été'
+    },
+    items: [
+      survivalItems[0],
+      survivalItems[1],
+      survivalItems[2],
+      {
+        id: 'sv1',
+        name: 'Tente de camping',
+        description: 'Abri portable pour se protéger des éléments',
+        type: ItemType.ACCESSORY,
+        imageUrl: './src/assets/camping-tent.png',
+        stats: [
+          { name: 'Protection', value: 70, maxValue: 100 },
+          { name: 'Isolation', value: 75, maxValue: 100 },
+          { name: 'Facilité de montage', value: 65, maxValue: 100 },
+          { name: 'Durabilité', value: 80, maxValue: 100 }
+        ]
+      }
+    ]
   },
   {
     id: '6',
@@ -67,7 +482,25 @@ const mockGames: Game[] = [
     platforms: [Platform.PLAYSTATION, Platform.SWITCH],
     releaseDate: '2023-07-05',
     publisher: 'Nacon Sports',
-    genre: 'Sport'
+    genre: 'Sport',
+    promotion: null,
+    items: [
+      sportsItems[0],
+      sportsItems[1],
+      {
+        id: 'sp3',
+        name: 'Équipement de protection',
+        description: 'Ensemble de protections pour éviter les blessures',
+        type: ItemType.ARMOR,
+        imageUrl: './src/assets/protective-gear.png',
+        stats: [
+          { name: 'Protection', value: 85, maxValue: 100 },
+          { name: 'Mobilité', value: 80, maxValue: 100 },
+          { name: 'Confort', value: 75, maxValue: 100 },
+          { name: 'Durabilité', value: 70, maxValue: 100 }
+        ]
+      }
+    ]
   },
   {
     id: '7',
@@ -78,7 +511,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2023-09-20',
     publisher: 'Nacon Mystery',
-    genre: 'Aventure'
+    genre: 'Aventure',
+    promotion: null,
   },
   {
     id: '8',
@@ -89,7 +523,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION],
     releaseDate: '2023-10-12',
     publisher: 'Nacon Future',
-    genre: 'RPG'
+    genre: 'RPG',
+    promotion: null,
   },
   {
     id: '9',
@@ -100,7 +535,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX],
     releaseDate: '2023-12-05',
     publisher: 'Nacon History',
-    genre: 'Simulation'
+    genre: 'Simulation',
+    promotion: null,
   },
   {
     id: '10',
@@ -111,7 +547,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.SWITCH],
     releaseDate: '2024-02-18',
     publisher: 'Nacon Discovery',
-    genre: 'Aventure'
+    genre: 'Aventure',
+    promotion: null,
   },
   {
     id: '11',
@@ -122,7 +559,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2024-04-22',
     publisher: 'Nacon Space',
-    genre: 'Stratégie'
+    genre: 'Stratégie',
+    promotion: null,
   },
   {
     id: '12',
@@ -133,7 +571,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.XBOX],
     releaseDate: '2023-11-30',
     publisher: 'Nacon Horror',
-    genre: 'Survie'
+    genre: 'Survie',
+    promotion: null,
   },
   {
     id: '13',
@@ -144,7 +583,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION, Platform.XBOX],
     releaseDate: '2024-01-15',
     publisher: 'Nacon Racing',
-    genre: 'Course'
+    genre: 'Course',
+    promotion: null,
   },
   {
     id: '14',
@@ -155,7 +595,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.SWITCH],
     releaseDate: '2023-08-08',
     publisher: 'Nacon Puzzle',
-    genre: 'Réflexion'
+    genre: 'Réflexion',
+    promotion: null,
   },
   {
     id: '15',
@@ -166,7 +607,8 @@ const mockGames: Game[] = [
     platforms: [Platform.PC, Platform.PLAYSTATION],
     releaseDate: '2024-03-05',
     publisher: 'Nacon Strategy',
-    genre: 'Stratégie'
+    genre: 'Stratégie',
+    promotion: null,
   }
 ];
 
@@ -220,5 +662,32 @@ export class MockGameRepository implements GameUseCases {
     const endIndex = startIndex + limit;
     
     return mockGames.slice(startIndex, endIndex);
+  }
+  
+  /**
+   * Update a game's promotion information
+   * @param gameId ID of the game to update
+   * @param promotion New promotion data or null to remove promotion
+   */
+  async updateGamePromotion(gameId: string, promotion: Promotion | null): Promise<Game | null> {
+    console.log(`PUT ${this.baseUrl}/${gameId}/promotion`);
+    
+    // Simulates network delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    // Find the game in our mock data
+    const gameIndex = mockGames.findIndex(game => game.id === gameId);
+    
+    if (gameIndex === -1) {
+      return null;
+    }
+    
+    // Create a copy of the game and update its promotion
+    const updatedGame = { ...mockGames[gameIndex], promotion };
+    
+    // Update the game in our mock data
+    mockGames[gameIndex] = updatedGame;
+    
+    return updatedGame;
   }
 }
