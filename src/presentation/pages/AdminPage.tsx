@@ -3,6 +3,7 @@ import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Game, Platform, Promotion } from '../../domain/entities/Game';
+import { GameItemsList } from '../components/GameItems/GameItemsList';
 
 export const AdminPage: React.FC = () => {
   const { games, loading, error, updateGamePromotion } = useGameContext();
@@ -263,80 +264,7 @@ export const AdminPage: React.FC = () => {
                 </div>
               </div>
               {/* Section des items du jeu */}
-              <div className="mt-6">
-                <h4 className="text-gray-400 mb-2">Items du jeu</h4>
-                {selectedGame.items && selectedGame.items.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {selectedGame.items.map((item) => (
-                      <div key={item.id} className="bg-gray-700 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          {item.imageUrl && (
-                            <div className="w-12 h-12 mr-3 bg-gray-600 rounded-md flex items-center justify-center overflow-hidden">
-                              <img
-                                src={''}
-                                alt={item.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.src =
-                                    'https://via.placeholder.com/48';
-                                }}
-                              />
-                            </div>
-                          )}
-                          <div>
-                            <h5 className="font-medium text-white">
-                              {item.name}
-                            </h5>
-                            <span className="text-xs px-2 py-1 bg-purple-700 text-white rounded">
-                              {item.type}
-                            </span>
-                          </div>
-                        </div>
-
-                        <p className="text-gray-300 text-sm mb-3">
-                          {item.description}
-                        </p>
-
-                        <div className="space-y-2">
-                          <h6 className="text-gray-400 text-xs font-medium">
-                            Statistiques
-                          </h6>
-                          {item.stats.map((stat, index) => (
-                            <div key={index} className="w-full">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span className="text-gray-300">
-                                  {stat.name}
-                                </span>
-                                <span className="text-gray-300">
-                                  {stat.value}
-                                  {stat.maxValue ? `/${stat.maxValue}` : ''}
-                                </span>
-                              </div>
-                              <div className="w-full bg-gray-600 rounded-full h-1.5">
-                                <div
-                                  className="bg-purple-600 h-1.5 rounded-full"
-                                  style={{
-                                    width: `${
-                                      stat.maxValue
-                                        ? (stat.value / stat.maxValue) * 100
-                                        : stat.value
-                                    }%`,
-                                  }}
-                                ></div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-400">
-                    Aucun item disponible pour ce jeu
-                  </p>
-                )}
-              </div>
-
+              <GameItemsList items={selectedGame.items} />
               {/* Section des promotions */}
               <div className="mt-6">
                 <div className="flex justify-between items-center">

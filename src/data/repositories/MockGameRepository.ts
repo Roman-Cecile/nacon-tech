@@ -1,4 +1,4 @@
-import { Game, Platform, Item, ItemType, ItemStat, Promotion } from '../../domain/entities/Game';
+import { Game, Platform, Item, ItemType, Promotion } from '../../domain/entities/Game';
 import { GameUseCases } from '../../domain/usecases/GameUseCases';
 
 // Mock items for different game types
@@ -124,6 +124,129 @@ const rpgItems: Item[] = [
       { name: 'Régénération', value: 75, maxValue: 100 },
       { name: 'Protection', value: 50, maxValue: 100 },
       { name: 'Chance', value: 60, maxValue: 100 }
+    ]
+  }
+];
+
+const manyItems: Item[] = [
+  {
+    id: 'mi1',
+    name: 'Épée de feu',
+    description: 'Une épée enflammée qui inflige des dégâts supplémentaires',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/fire-sword.png',
+    stats: [
+      { name: 'Dégâts', value: 80, maxValue: 100 },
+      { name: 'Dégâts de feu', value: 95, maxValue: 100 },
+      { name: 'Vitesse', value: 65, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi2',
+    name: 'Bouclier de glace',
+    description: 'Un bouclier magique qui gèle les ennemis à l\'impact',
+    type: ItemType.ARMOR,
+    imageUrl: './src/assets/ice-shield.png',
+    stats: [
+      { name: 'Défense', value: 85, maxValue: 100 },
+      { name: 'Résistance au feu', value: 90, maxValue: 100 },
+      { name: 'Chance de gel', value: 75, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi3',
+    name: 'Bottes de célérité',
+    description: 'Des bottes magiques qui augmentent considérablement la vitesse',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/speed-boots.png',
+    stats: [
+      { name: 'Vitesse', value: 95, maxValue: 100 },
+      { name: 'Agilité', value: 85, maxValue: 100 },
+      { name: 'Endurance', value: 70, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi4',
+    name: 'Potion de force',
+    description: 'Une potion qui augmente temporairement la force',
+    type: ItemType.CONSUMABLE,
+    imageUrl: './src/assets/strength-potion.png',
+    stats: [
+      { name: 'Bonus de force', value: 90, maxValue: 100 },
+      { name: 'Durée', value: 60, maxValue: 100 },
+      { name: 'Effets secondaires', value: 20, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi5',
+    name: 'Arc elfique',
+    description: 'Un arc léger et précis fabriqué par les elfes',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/elven-bow.png',
+    stats: [
+      { name: 'Dégâts', value: 70, maxValue: 100 },
+      { name: 'Précision', value: 95, maxValue: 100 },
+      { name: 'Portée', value: 90, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi6',
+    name: 'Casque de vision nocturne',
+    description: 'Un casque technologique permettant de voir dans l\'obscurité',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/night-vision.png',
+    stats: [
+      { name: 'Vision nocturne', value: 100, maxValue: 100 },
+      { name: 'Confort', value: 65, maxValue: 100 },
+      { name: 'Autonomie', value: 80, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi7',
+    name: 'Gants de voleur',
+    description: 'Des gants qui augmentent la dextérité et la discrétion',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/thief-gloves.png',
+    stats: [
+      { name: 'Dextérité', value: 90, maxValue: 100 },
+      { name: 'Discrétion', value: 85, maxValue: 100 },
+      { name: 'Crochetage', value: 95, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi8',
+    name: 'Bâton de mage',
+    description: 'Un bâton qui amplifie les pouvoirs magiques',
+    type: ItemType.WEAPON,
+    imageUrl: './src/assets/mage-staff.png',
+    stats: [
+      { name: 'Puissance magique', value: 95, maxValue: 100 },
+      { name: 'Régénération de mana', value: 80, maxValue: 100 },
+      { name: 'Contrôle des éléments', value: 85, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi9',
+    name: 'Amulette de téléportation',
+    description: 'Une amulette qui permet de se téléporter sur de courtes distances',
+    type: ItemType.ACCESSORY,
+    imageUrl: './src/assets/teleport-amulet.png',
+    stats: [
+      { name: 'Distance', value: 70, maxValue: 100 },
+      { name: 'Temps de recharge', value: 60, maxValue: 100 },
+      { name: 'Précision', value: 85, maxValue: 100 }
+    ]
+  },
+  {
+    id: 'mi10',
+    name: 'Armure lourde',
+    description: 'Une armure robuste offrant une protection maximale',
+    type: ItemType.ARMOR,
+    imageUrl: './src/assets/heavy-armor.png',
+    stats: [
+      { name: 'Défense', value: 95, maxValue: 100 },
+      { name: 'Mobilité', value: 40, maxValue: 100 },
+      { name: 'Durabilité', value: 90, maxValue: 100 }
     ]
   }
 ];
@@ -311,23 +434,7 @@ const mockGames: Game[] = [
     publisher: 'Nacon RPG',
     genre: 'RPG',
     promotion: null,
-    items: [
-      rpgItems[0],
-      rpgItems[1],
-      rpgItems[2],
-      {
-        id: 'rp1',
-        name: 'Grimoire ancien',
-        description: 'Livre de sorts contenant des connaissances magiques oubliées',
-        type: ItemType.ACCESSORY,
-        imageUrl: './src/assets/ancient-grimoire.png',
-        stats: [
-          { name: 'Puissance magique', value: 90, maxValue: 100 },
-          { name: 'Sagesse', value: 85, maxValue: 100 },
-          { name: 'Mana', value: 95, maxValue: 100 }
-        ]
-      }
-    ]
+    items: manyItems // Utilisation des nombreux items pour tester le défilement infini
   },
   {
     id: '5',
