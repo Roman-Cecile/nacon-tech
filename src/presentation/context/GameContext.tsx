@@ -204,7 +204,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     promotion: Promotion | null
   ) => {
     try {
-      setLoading(true);
       setError(null);
 
       const updatedGame = await gameApiAdapter.updateGamePromotion(
@@ -226,8 +225,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (err) {
       setError('Failed to update game promotion. Please try again later.');
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 

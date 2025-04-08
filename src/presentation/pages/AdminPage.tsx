@@ -26,18 +26,17 @@ export const AdminPage: React.FC = () => {
 
   const handleEditPromotion = () => {
     if (selectedGame) {
-      setPromotionForm(
-        selectedGame.promotion || {
-          id: `promo-${selectedGame.id}`,
-          startDate: new Date().toISOString().split('T')[0],
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0],
-          isRecurring: false,
-          discountPercentage: 10,
-          name: 'Nouvelle promotion',
-        }
-      );
+      const newPromotion: Promotion = {
+        id: `promo-${selectedGame.id}`,
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0],
+        isRecurring: false,
+        discountPercentage: 10,
+        name: 'Nouvelle promotion',
+      };
+      setPromotionForm(selectedGame.promotion || newPromotion);
       setIsEditingPromotion(true);
     }
   };
@@ -74,6 +73,9 @@ export const AdminPage: React.FC = () => {
 
     try {
       await updateGamePromotion(selectedGame.id, null);
+      // Mettre à jour le jeu sélectionné avec la promotion supprimée
+      const updatedGame = { ...selectedGame, promotion: null };
+      setSelectedGame(updatedGame);
       setIsEditingPromotion(false);
       setPromotionForm(null);
     } catch (err) {
@@ -109,6 +111,9 @@ export const AdminPage: React.FC = () => {
 
     try {
       await updateGamePromotion(selectedGame.id, promotionForm);
+      // Mettre à jour le jeu sélectionné avec la nouvelle promotion
+      const updatedGame = { ...selectedGame, promotion: promotionForm };
+      setSelectedGame(updatedGame);
       setIsEditingPromotion(false);
       setFormError(null);
     } catch (err) {
